@@ -1,0 +1,32 @@
+{
+  "name": "@ugrc/plpco-rdcc-notifications",
+  "version": "1.0.0",
+  "description": "Weekly email notifications for RDCC projects",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/agrc/plpco-rdcc-notifications.git"
+  },
+  "keywords": [
+    "ugrc"
+  ],
+  "author": "UGRC Developers",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/agrc/plpco-rdcc-notifications/issues"
+  },
+  "homepage": "https://github.com/agrc/plpco-rdcc-notifications#readme",
+  "devDependencies": {
+    "vite": "^2.6.4"
+  },
+  "dependencies": {
+    "date-fns": "^2.25.0",
+    "handlebars": "^4.7.7",
+    "ky": "^0.28.6"
+  }
+}
