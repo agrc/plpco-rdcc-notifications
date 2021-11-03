@@ -46,7 +46,7 @@ export async function getNewProjects() {
         Date.now(),
         'MM/dd/yyy'
       )}'`,
-      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,project_url,county,created_date',
+      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
       orderByFields: 'created_date DESC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
@@ -67,6 +67,7 @@ export async function getNewProjects() {
   const newProjects = featureSet.features.map((feature) => {
     return {
       id: feature.attributes.ProjectID,
+      title: feature.attributes.title_action,
       abstract: feature.attributes.project_abstract,
       sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
       commentDeadline: `${format(new Date(feature.attributes.comment_deadline), 'MM/dd/yyyy')}`,
