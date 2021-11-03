@@ -41,7 +41,6 @@ export const template = Handlebars.compile(`
           <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
             #{{id}}</a></strong>: {{abstract}}</div>
           <div><strong>Sponsor:</strong> {{sponsor}}</div>
-          <div>Download State Comment(s) From This Page:</div>
         </div>
       {{/each}}
     {{else}}
