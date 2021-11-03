@@ -17,7 +17,7 @@ export const template = Handlebars.compile(`
     {{#each newProjects}}
       <div style="padding-bottom: 2rem;">
         <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
-        <div><strong>Sponsor:</strong> {{sponsor}}</div>
+        <div><strong>Sponsor</strong>: {{sponsor}}</div>
         {{#if county}}
         <div><strong>Counties</strong>: {{county}}</div>
         {{/if}}
@@ -36,8 +36,9 @@ export const template = Handlebars.compile(`
       <h3>{{date}} - The comment deadline is {{daysUntil}}</h3>
       {{#each projects}}
         <div style="padding-left: 2rem; padding-bottom: 2rem;">
-          <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
-          <div><strong>Sponsor:</strong> {{sponsor}}</div>
+          <div><strong>Project #{{id}}</strong>: {{title}}</div>
+          <div><strong>Abstract</strong>: {{abstract}}</div>
+          <div><strong>Sponsor</strong>: {{sponsor}}</div>
         </div>
       {{/each}}
     {{else}}
@@ -51,7 +52,7 @@ export const template = Handlebars.compile(`
     {{#each projectsWithComments}}
       <div style="padding-bottom: 2rem;">
         <div><strong>Project #{{id}}</strong>: {{title}}</div>
-        <div><strong>Sponsor:</strong> {{sponsor}}</div>
+        <div><strong>Sponsor</strong>: {{sponsor}}</div>
       </div>
     {{else}}
       <div>Nothing to report for this week</div>

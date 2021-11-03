@@ -83,7 +83,7 @@ export async function getUpcomingProjects() {
     searchParams: {
       f: 'json',
       where: `comment_deadline >= '${format(Date.now(), 'MM/dd/yyy')}'`,
-      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract',
+      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action',
       orderByFields: 'comment_deadline ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
@@ -112,6 +112,7 @@ export async function getUpcomingProjects() {
     projectsByDate[date].push({
       id: feature.attributes.ProjectID,
       abstract: feature.attributes.project_abstract,
+      title: feature.attributes.title_action,
       sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
       commentDeadline: date,
     });
