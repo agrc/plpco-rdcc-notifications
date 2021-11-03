@@ -50,7 +50,7 @@ export const template = Handlebars.compile(`
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each projectsWithComments}}
       <div style="padding-bottom: 2rem;">
-        <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
+        <div><strong>Project #{{id}}</strong>: {{title}}</div>
         <div><strong>Sponsor:</strong> {{sponsor}}</div>
       </div>
     {{else}}

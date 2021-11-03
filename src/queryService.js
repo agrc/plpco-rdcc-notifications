@@ -139,7 +139,7 @@ export async function getProjectsWithComments() {
         Date.now(),
         'MM/dd/yyy'
       )}' AND status = 7`,
-      outFields: 'ProjectId,sponsor,project_abstract',
+      outFields: 'ProjectId,sponsor,title_action',
       orderByFields: 'last_edited_date DESC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
@@ -160,7 +160,7 @@ export async function getProjectsWithComments() {
   const projectsWithComments = featureSet.features.map((feature) => {
     return {
       id: feature.attributes.ProjectID,
-      abstract: feature.attributes.project_abstract,
+      title: feature.attributes.title_action,
       sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
     };
   });
