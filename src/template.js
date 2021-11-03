@@ -48,10 +48,10 @@ export const template = Handlebars.compile(`
     {{/each}}
   </section>
 
-  <h2 id="comments-published">State Comment(s) Published</h2>
+  <h2 id="comments-published">{{projectsWithCommentsData.count}} {{projectsWithCommentsData.title}}</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
-    {{#each publishedComments}}
+    {{#each projectsWithComments}}
       <div style="padding-bottom: 2rem;">
         <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
           #{{id}}</a></strong>: {{abstract}}</div>
