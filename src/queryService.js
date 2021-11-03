@@ -1,6 +1,7 @@
 import ky from 'ky';
 import { differenceInCalendarDays, format, subDays } from 'date-fns';
 
+const maxRecordCount = 10;
 const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
 const queryService = ky.create({
   timeout: 25000,
@@ -48,7 +49,7 @@ export async function getNewProjects() {
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,project_url,county,created_date',
       orderByFields: 'created_date DESC',
       returnGeometry: false,
-      resultRecordCount: 10,
+      resultRecordCount: maxRecordCount,
     },
   });
 
@@ -85,7 +86,7 @@ export async function getUpcomingProjects() {
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract',
       orderByFields: 'comment_deadline ASC',
       returnGeometry: false,
-      resultRecordCount: 20,
+      resultRecordCount: maxRecordCount,
     },
   });
 
@@ -130,4 +131,41 @@ export async function getUpcomingProjects() {
   return [sortedProjectsByDate, featureSet.features.length];
 }
 
-export async function getPublishedComments() {}
+export async function getProjectsWithComments() {
+  const response = await queryService('0/query', {
+    searchParams: {
+      f: 'json',
+      where: `last_edited_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
+        Date.now(),
+        'MM/dd/yyy'
+      )}' AND status = 7`,
+      outFields: 'ProjectId,sponsor,project_abstract',
+      orderByFields: 'last_edited_date DESC',
+      returnGeometry: false,
+      resultRecordCount: maxRecordCount,
+    },
+  });
+
+  const featureSet = await response.json();
+
+  if (featureSet.error) {
+    throw new Error(featureSet.error.message);
+  }
+
+  let metadata;
+  if (featureSet.features.length > 0) {
+    metadata = await getLayerMetadata(0);
+  }
+
+  const projectsWithComments = featureSet.features.map((feature) => {
+    return {
+      id: feature.attributes.ProjectID,
+      abstract: feature.attributes.project_abstract,
+      sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
+    };
+  });
+
+  const title = featureSet.features.length === 1 ? 'State Comment Published' : 'State Comments Published';
+
+  return [projectsWithComments, { title, count: featureSet.features.length }];
+}
