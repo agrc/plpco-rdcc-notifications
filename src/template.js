@@ -13,31 +13,53 @@ export const template = Handlebars.compile(`
     For questions please email us at <a href="mailto:rdcc@utah.gov?subject={{week}} RDCC notice">rdcc@utah.gov</a>.
   </div>
 
-  <h2 id="new-projects">New Projects</h2>
+  <h2 id="new-projects">{{newProjectCount}} New Projects</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each newProjects}}
-    <div style="padding-bottom: 2rem;">
-    <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
-    <div><strong>Sponsor:</strong> {{sponsor}}</div>
-    <div><strong>Created On</strong>: {{createdDate}}</div>
-    <div><strong>Comment Deadline</strong>: {{commentDeadline}}</div>
-    <div><strong>Counties</strong>: {{county}}</div>
-    </div>
+      <div style="padding-bottom: 2rem;">
+        <div><strong><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project #{{id}}</a></strong>: {{abstract}}</div>
+        <div><strong>Sponsor:</strong> {{sponsor}}</div>
+        {{#if county}}
+        <div><strong>Counties</strong>: {{county}}</div>
+        {{/if}}
+        <div><strong>Created</strong>: {{createdDate}} <strong></div>
+        <div>Comment deadline</strong>: {{commentDeadline}}</div>
+      </div>
+    {{else}}
+       <div>Nothing to report for this week</div>
     {{/each}}
   </section>
 
-  <h2 id="upcoming-projects">Upcoming Dates</h2>
+  <h2 id="upcoming-projects">{{upcomingProjectCount}} Upcoming Dates</h2>
+
+  <section style="padding-left: 1rem; padding-bottom: 2rem;">
+   {{#each upcomingProjects}}
+      <h3>{{date}} - {{daysUntil}}</h3>
+      {{#each projects}}
+        <div style="padding-left: 2rem; padding-bottom: 2rem;">
+          <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
+            #{{id}}</a></strong>: {{abstract}}</div>
+          <div><strong>Sponsor:</strong> {{sponsor}}</div>
+          <div>Download State Comment(s) From This Page:</div>
+        </div>
+      {{/each}}
+    {{else}}
+       <div>Nothing to report for this week</div>
+    {{/each}}
+  </section>
 
   <h2 id="comments-published">State Comment(s) Published</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
-    {{#each newProjects}}
-    <div style="padding-bottom: 2rem;">
-    <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
-    <div><strong>Sponsor:</strong> {{sponsor}}</div>
-    <div>Download State Comment(s) From This Page:</div>
-    </div>
+    {{#each publishedComments}}
+      <div style="padding-bottom: 2rem;">
+        <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
+          #{{id}}</a></strong>: {{abstract}}</div>
+        <div><strong>Sponsor:</strong> {{sponsor}}</div>
+      </div>
+    {{else}}
+        <div>Nothing to report for this week</div>
     {{/each}}
   </section>
 `);

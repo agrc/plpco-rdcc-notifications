@@ -1,7 +1,14 @@
 import ky from 'ky';
-import { subDays, format } from 'date-fns';
+import { differenceInCalendarDays, format, subDays } from 'date-fns';
 
 const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
+const queryService = ky.create({
+  timeout: 25000,
+  prefixUrl: featureService,
+  searchParams: {
+    f: 'json',
+  },
+});
 
 export function lookupSponsor(metadata, layerName, code) {
   const sponsors = metadata.fields.filter((field) => field.name === layerName)[0].domain.codedValues;
@@ -10,28 +17,38 @@ export function lookupSponsor(metadata, layerName, code) {
   return sponsor.length > 0 ? sponsor[0].name : 'unknown';
 }
 
-export async function getLayerMetadata(layerId) {
-  const response = await ky.get(`${featureService}/${layerId}`, {
-    searchParams: {
-      f: 'json',
-    },
-  });
+export function getDaysUntilLabel(dateString) {
+  const days = differenceInCalendarDays(new Date(dateString), Date.now());
 
+  switch (days) {
+    case 0:
+      return 'today';
+    case 1:
+      return 'tomorrow';
+    default:
+      return `in ${days} days`;
+  }
+}
+
+export async function getLayerMetadata(layerId) {
+  const response = await queryService(layerId.toString());
   const metadata = await response.json();
 
   return metadata;
 }
 
 export async function getNewProjects() {
-  const response = await ky.get(`${featureService}/0/query`, {
-    timeout: 10000,
+  const response = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `created_date >= '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}'`,
+      where: `created_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
+        Date.now(),
+        'MM/dd/yyy'
+      )}'`,
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,project_url,county,created_date',
       orderByFields: 'created_date DESC',
       returnGeometry: false,
-      resultRecordCount: 5,
+      resultRecordCount: 10,
     },
   });
 
@@ -57,5 +74,60 @@ export async function getNewProjects() {
     };
   });
 
-  return newProjects;
+  return [newProjects, featureSet.features.length];
 }
+
+export async function getUpcomingProjects() {
+  const response = await queryService('0/query', {
+    searchParams: {
+      f: 'json',
+      where: `comment_deadline >= '${format(Date.now(), 'MM/dd/yyy')}'`,
+      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract',
+      orderByFields: 'comment_deadline ASC',
+      returnGeometry: false,
+      resultRecordCount: 20,
+    },
+  });
+
+  const featureSet = await response.json();
+
+  if (featureSet.error) {
+    throw new Error(featureSet.error.message);
+  }
+
+  let metadata;
+  if (featureSet.features.length > 0) {
+    metadata = await getLayerMetadata(0);
+  }
+
+  const projectsByDate = {};
+
+  featureSet.features.forEach((feature) => {
+    const date = format(new Date(feature.attributes.comment_deadline), 'MM/dd/yyyy');
+    if (!projectsByDate[date]) {
+      projectsByDate[date] = [];
+    }
+
+    projectsByDate[date].push({
+      id: feature.attributes.ProjectID,
+      abstract: feature.attributes.project_abstract,
+      sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
+      commentDeadline: date,
+    });
+  });
+
+  const keys = Object.keys(projectsByDate).sort();
+
+  const sortedProjectsByDate = [];
+  keys.forEach((key) => {
+    sortedProjectsByDate.push({
+      date: key,
+      daysUntil: getDaysUntilLabel(key),
+      projects: projectsByDate[key],
+    });
+  });
+
+  return [sortedProjectsByDate, featureSet.features.length];
+}
+
+export async function getPublishedComments() {}
