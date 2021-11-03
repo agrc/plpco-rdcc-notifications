@@ -47,7 +47,7 @@ export async function getNewProjects() {
         'MM/dd/yyy'
       )}'`,
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
-      orderByFields: 'created_date DESC',
+      orderByFields: 'created_date ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
     },
