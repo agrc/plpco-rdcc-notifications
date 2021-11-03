@@ -16,7 +16,8 @@ export const template = Handlebars.compile(`
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each newProjects}}
       <div style="padding-bottom: 2rem;">
-        <div><strong>Project #{{id}}</strong>: {{abstract}}</div>
+        <div><strong>Project #{{id}}</strong>: {{title}}</div>
+        <div><strong>Abstract</strong>: {{abstract}}</div>
         <div><strong>Sponsor</strong>: {{sponsor}}</div>
         {{#if county}}
         <div><strong>Counties</strong>: {{county}}</div>
