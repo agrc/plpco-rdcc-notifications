@@ -1,7 +1,6 @@
 import Handlebars from 'handlebars';
 
 export const template = Handlebars.compile(`
-  <h1>{{week}} RDCC Notice</h1>
   <div>
     Here is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:
     <ul>
