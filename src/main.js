@@ -1,11 +1,23 @@
 import './style.css';
 import { template } from './template';
-import { getNewProjects } from './queryService';
+import { getNewProjects, getUpcomingProjects } from './queryService';
 import { format } from 'date-fns';
 
-getNewProjects().then((newProjects) => {
-  document.querySelector('#app').innerHTML = `<main>${template({
+const startup = async () => {
+  const [newProjects, newProjectCount] = await getNewProjects();
+  const [upcomingProjects, upcomingProjectCount] = await getUpcomingProjects();
+
+  const data = {
     newProjects,
+    newProjectCount,
+    upcomingProjects,
+    upcomingProjectCount,
     week: format(Date.now(), 'wo'),
-  })}</main>`;
-});
+    year: format(Date.now(), 'yyyy'),
+  };
+
+  console.log(data);
+  document.querySelector('#app').innerHTML = `<main>${template(data)}</main>`;
+};
+
+startup();
