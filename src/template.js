@@ -22,8 +22,8 @@ export const template = Handlebars.compile(`
         {{#if county}}
         <div><strong>Counties</strong>: {{county}}</div>
         {{/if}}
-        <div><strong>Created</strong>: {{createdDate}} <strong></div>
-        <div>Comment deadline</strong>: {{commentDeadline}}</div>
+        <div><strong>Created</strong>: {{createdDate}}</div>
+        <div><strong>Comment deadline</strong>: {{commentDeadline}}</div>
       </div>
     {{else}}
        <div>Nothing to report for this week</div>
@@ -37,8 +37,10 @@ export const template = Handlebars.compile(`
       <h3>{{date}} - The comment deadline is {{daysUntil}}</h3>
       {{#each projects}}
         <div style="padding-left: 2rem; padding-bottom: 2rem;">
-          <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
-            #{{id}}</a></strong>: {{abstract}}</div>
+          <div>
+            <strong>
+              <a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project #{{id}}</a>
+            </strong>: {{abstract}}</div>
           <div><strong>Sponsor:</strong> {{sponsor}}</div>
         </div>
       {{/each}}
@@ -52,8 +54,10 @@ export const template = Handlebars.compile(`
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each projectsWithComments}}
       <div style="padding-bottom: 2rem;">
-        <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
-          #{{id}}</a></strong>: {{abstract}}</div>
+        <div>
+          <strong>
+            <a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project #{{id}}</a>
+          </strong>: {{abstract}}</div>
         <div><strong>Sponsor:</strong> {{sponsor}}</div>
       </div>
     {{else}}
