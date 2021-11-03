@@ -35,7 +35,7 @@ export const template = Handlebars.compile(`
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
    {{#each upcomingProjects}}
-      <h3>{{date}} - {{daysUntil}}</h3>
+      <h3>{{date}} - The comment deadline is {{daysUntil}}</h3>
       {{#each projects}}
         <div style="padding-left: 2rem; padding-bottom: 2rem;">
           <div><a href="http://rdcc.utah.gov/plpco/auth/agency/viewProject.action?projectId={{id}}" title="View full project">Project
