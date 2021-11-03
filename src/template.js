@@ -3,14 +3,14 @@ import Handlebars from 'handlebars';
 export const template = Handlebars.compile(`
   <h1>{{week}} RDCC Notice</h1>
   <div>
-    Here is the RDCC notice for the {{week}} week. This notice includes the following sections:
+    Here is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:
     <ul>
       <li><strong><a href="#new-projects">New Projects</a></strong>: Projects approved by PLPCO last week
       <li><strong><a href="#upcoming-projects">Upcoming Dates</a></strong>: Projects with comment deadlines next week
       <li><strong><a href="#comments-published">State Comment(s) Published</a></strong>: Projects in which state comments were published last week.
     </ul>
 
-    For questions please email us at <a href="mailto:rdcc@utah.gov">rdcc@utah.gov</a>.
+    For questions please email us at <a href="mailto:rdcc@utah.gov?subject={{week}} RDCC notice">rdcc@utah.gov</a>.
   </div>
 
   <h2 id="new-projects">New Projects</h2>
