@@ -1,7 +1,7 @@
 import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService.js';
 import { format } from 'date-fns';
 
-async function getEmailData() {
+export async function getEmailData() {
   console.log('request accepted');
 
   const [newProjects, newProjectCount] = await getNewProjects();
@@ -23,5 +23,3 @@ async function getEmailData() {
 
   console.log('completed');
 }
-
-export default getEmailData;
