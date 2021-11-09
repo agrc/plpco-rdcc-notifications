@@ -42,7 +42,7 @@ jobs:
           name: rdcc-email
           description: function to collect and send the weekly RDCC email
           runtime: nodejs14
-          source_dir: src/function
+          source_dir: ./
           event_trigger_type: google.pubsub.topic.publish
           event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/rdcc-email-topic
           event_trigger_service: pubsub.googleapis.com
