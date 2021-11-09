@@ -1,4 +1,4 @@
-import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService.js';
+import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService';
 import { format } from 'date-fns';
 
 export const getEmailData = async () => {
