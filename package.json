@@ -28,12 +28,13 @@
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
     "handlebars": "^4.7.7",
+    "ky": "^0.28.7",
     "prettier": "^2.4.1",
     "vite": "^2.6.4"
   },
   "dependencies": {
     "date-fns": "^2.25.0",
-    "ky": "^0.28.7"
+    "got": "^11.8.2"
   },
   "eslintConfig": {
     "parserOptions": {

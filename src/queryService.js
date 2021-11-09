@@ -1,9 +1,9 @@
-import ky from 'ky';
+import got from 'got';
 import { differenceInCalendarDays, format, subDays } from 'date-fns';
 
 const maxRecordCount = 10;
 const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
-const queryService = ky.create({
+const queryService = got.extend({
   timeout: 25000,
   prefixUrl: featureService,
   searchParams: {
@@ -32,14 +32,13 @@ export function getDaysUntilLabel(dateString) {
 }
 
 export async function getLayerMetadata(layerId) {
-  const response = await queryService(layerId.toString());
-  const metadata = await response.json();
+  const metadata = await queryService(layerId.toString()).json();
 
   return metadata;
 }
 
 export async function getNewProjects() {
-  const response = await queryService('0/query', {
+  const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
       where: `created_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
@@ -51,9 +50,7 @@ export async function getNewProjects() {
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
     },
-  });
-
-  const featureSet = await response.json();
+  }).json();
 
   if (featureSet.error) {
     throw new Error(featureSet.error.message);
@@ -80,7 +77,7 @@ export async function getNewProjects() {
 }
 
 export async function getUpcomingProjects() {
-  const response = await queryService('0/query', {
+  const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
       where: `comment_deadline >= '${format(Date.now(), 'MM/dd/yyy')}'`,
@@ -89,9 +86,7 @@ export async function getUpcomingProjects() {
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
     },
-  });
-
-  const featureSet = await response.json();
+  }).json();
 
   if (featureSet.error) {
     throw new Error(featureSet.error.message);
@@ -134,7 +129,7 @@ export async function getUpcomingProjects() {
 }
 
 export async function getProjectsWithComments() {
-  const response = await queryService('0/query', {
+  const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
       where: `last_edited_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
@@ -146,9 +141,7 @@ export async function getProjectsWithComments() {
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
     },
-  });
-
-  const featureSet = await response.json();
+  }).json();
 
   if (featureSet.error) {
     throw new Error(featureSet.error.message);
