@@ -19,7 +19,7 @@ export const getEmailData = async () => {
     year: format(Date.now(), 'yyyy'),
   };
 
-  console.log('sending email', data);
+  console.log('sending email', JSON.stringify(data));
 
   console.log('completed');
 };
