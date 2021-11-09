@@ -9,4 +9,7 @@ firebase.json
 .firebaserc
 node_modules
 dist
+.vscode
+.github
+LICENSE
 #!include:.gitignore
