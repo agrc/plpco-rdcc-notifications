@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "Weekly email notifications for RDCC projects",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
