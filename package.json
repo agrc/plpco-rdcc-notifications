@@ -22,17 +22,17 @@
   },
   "homepage": "https://github.com/agrc/plpco-rdcc-notifications#readme",
   "devDependencies": {
-    "eslint": "^8.1.0",
+    "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
     "eslint-plugin-simple-import-sort": "^7.0.0",
+    "handlebars": "^4.7.7",
     "prettier": "^2.4.1",
     "vite": "^2.6.4"
   },
   "dependencies": {
     "date-fns": "^2.25.0",
-    "handlebars": "^4.7.7",
-    "ky": "^0.28.6"
+    "ky": "^0.28.7"
   },
   "eslintConfig": {
     "parserOptions": {
