@@ -47,7 +47,8 @@ jobs:
           event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/rdcc-email-topic
           event_trigger_service: pubsub.googleapis.com
           project_id: ${{ SECRETS.PROJECT_ID}}
-          credentials: ${{ secrets.FUNCTION_SERVICE_ACCOUNT }}
+          credentials: ${{ secrets.SERVICE_ACCOUNT }}
+          service_account_email: ${{ secrets.FUNCTION_SERVICE_ACCOUNT_EMAIL }}
 
       - name: 🪣 Cache firebase
         uses: actions/cache@v2
