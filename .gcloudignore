@@ -1,2 +1,10 @@
 .git
 #!include:.gitignore
+favicon.svg
+demo.js
+style.css
+template.js
+index.html
+readme.md
+firebase.json
+.firebaserc
