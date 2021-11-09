@@ -23,6 +23,13 @@ jobs:
       - name: ⬇️ Set up code
         uses: actions/checkout@v2
 
+      - name: ☁️ Setup GCP CLI
+        uses: google-github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.PROJECT_ID }}
+          service_account_key: ${{ secrets.SERVICE_ACCOUNT }}
+          export_default_credentials: true
+
       - name: ⎔ Setup Node.js
         uses: actions/setup-node@v2
         with:
@@ -34,6 +41,20 @@ jobs:
 
       - name: 🏗 Run build script
         run: npm run build
+
+      - name: 🚀 Deploy cloud function
+        id: function
+        uses: google-github-actions/deploy-cloud-functions@main
+        with:
+          name: rdcc-email
+          description: function to collect and send the weekly RDCC email
+          runtime: nodejs14
+          source_dir: src/function
+          event_trigger_type: google.pubsub.topic.publish
+          event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/rdcc-email-topic
+          event_trigger_service: pubsub.googleapis.com
+          project_id: ${{ SECRETS.PROJECT_ID}}
+          credentials: ${{ secrets.FUNCTION_SERVICE_ACCOUNT }}
 
       - name: 🪣 Cache firebase
         uses: actions/cache@v2
