@@ -2,7 +2,7 @@ import Handlebars from 'handlebars';
 
 export const template = Handlebars.compile(`
   <div>
-    <p>Here is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:</p>
+    <p>This is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:</p>
     <ul>
       <li><strong>New Projects</strong>: Projects approved by PLPCO last week
       <li><strong>Upcoming Dates</strong>: Projects with comment deadlines next week
@@ -13,7 +13,7 @@ export const template = Handlebars.compile(`
 
   <h2>{{newProjectCount}} New Projects</h2>
 
-  <section style="padding-left: 1rem; padding-bottom: 2rem;">
+  <div style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each newProjects}}
       <div style="padding-bottom: 2rem;">
         <div><strong>Project #{{id}}</strong>: {{title}}</div>
@@ -28,11 +28,11 @@ export const template = Handlebars.compile(`
     {{else}}
        <div>Nothing to report for this week</div>
     {{/each}}
-  </section>
+  </div>
 
   <h2>{{upcomingProjectCount}} Upcoming Dates</h2>
 
-  <section style="padding-left: 1rem; padding-bottom: 2rem;">
+  <div style="padding-left: 1rem; padding-bottom: 2rem;">
    {{#each upcomingProjects}}
       <h3>{{date}} - The comment deadline is {{daysUntil}}</h3>
       {{#each projects}}
@@ -45,11 +45,11 @@ export const template = Handlebars.compile(`
     {{else}}
        <div>Nothing to report for this week</div>
     {{/each}}
-  </section>
+  </div>
 
   <h2>{{projectsWithCommentsData.count}} {{projectsWithCommentsData.title}}</h2>
 
-  <section style="padding-left: 1rem; padding-bottom: 2rem;">
+  <div style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each projectsWithComments}}
       <div style="padding-bottom: 2rem;">
         <div><strong>Project #{{id}}</strong>: {{title}}</div>
@@ -58,5 +58,5 @@ export const template = Handlebars.compile(`
     {{else}}
       <div>Nothing to report for this week</div>
     {{/each}}
-  </section>
+  </div>
 `);
