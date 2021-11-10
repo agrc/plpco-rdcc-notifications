@@ -4,14 +4,14 @@ export const template = Handlebars.compile(`
   <div>
     <p>Here is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:</p>
     <ul>
-      <li><strong><a href="#new-projects">New Projects</a></strong>: Projects approved by PLPCO last week
-      <li><strong><a href="#upcoming-projects">Upcoming Dates</a></strong>: Projects with comment deadlines next week
-      <li><strong><a href="#comments-published">State Comments Published</a></strong>: Projects in which state comments were published last week.
+      <li><strong>New Projects</strong>: Projects approved by PLPCO last week
+      <li><strong>Upcoming Dates</strong>: Projects with comment deadlines next week
+      <li><strong>State Comments Published</strong>: Projects in which state comments were published last week.
     </ul>
     <p>For more project information, search for a specific project number at <a href="https://rdcc.utah.gov">rdcc.utah.gov</a>. For questions, please email us at <a href="mailto:rdcc@utah.gov?subject={{week}} RDCC notice">rdcc@utah.gov</a>.</p>
   </div>
 
-  <h2 id="new-projects">{{newProjectCount}} New Projects</h2>
+  <h2>{{newProjectCount}} New Projects</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each newProjects}}
@@ -30,7 +30,7 @@ export const template = Handlebars.compile(`
     {{/each}}
   </section>
 
-  <h2 id="upcoming-projects">{{upcomingProjectCount}} Upcoming Dates</h2>
+  <h2>{{upcomingProjectCount}} Upcoming Dates</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
    {{#each upcomingProjects}}
@@ -47,7 +47,7 @@ export const template = Handlebars.compile(`
     {{/each}}
   </section>
 
-  <h2 id="comments-published">{{projectsWithCommentsData.count}} {{projectsWithCommentsData.title}}</h2>
+  <h2>{{projectsWithCommentsData.count}} {{projectsWithCommentsData.title}}</h2>
 
   <section style="padding-left: 1rem; padding-bottom: 2rem;">
     {{#each projectsWithComments}}
