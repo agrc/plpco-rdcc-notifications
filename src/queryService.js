@@ -1,7 +1,7 @@
 import ky from 'ky-universal';
 import { differenceInCalendarDays, format, subDays } from 'date-fns';
 
-const maxRecordCount = 10;
+const maxRecordCount = undefined;
 const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
 const queryService = ky.create({
   timeout: 25000,
