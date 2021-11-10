@@ -45,10 +45,7 @@ jobs:
           runtime: nodejs16
           source_dir: ./
           entry_point: getEmailData
-          env_vars: >-
-            SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},
-            SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},
-            EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+          env_vars: SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           event_trigger_type: google.pubsub.topic.publish
           event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/rdcc-email-topic
           event_trigger_service: pubsub.googleapis.com
