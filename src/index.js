@@ -29,7 +29,10 @@ export const getEmailData = async () => {
   };
 
   var options = {
-    from: 'rdcc@utah.gov',
+    from: {
+      email: 'rdcc@utah.gov',
+      name: 'PLPCO RDCC',
+    },
     templateId: process.env.SENDGRID_TEMPLATE,
     to: process.env.EMAIL_RECIPIENT,
     dynamicTemplateData: {
