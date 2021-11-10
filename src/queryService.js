@@ -1,5 +1,6 @@
 import ky from 'ky-universal';
-import { differenceInCalendarDays, format, subDays } from 'date-fns';
+import { format } from 'date-fns';
+import { getBeginningOfLastWeek, getDaysUntilLabel, getEndOfLastWeek, getToday } from './dateService.js';
 
 const maxRecordCount = undefined;
 const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
@@ -18,19 +19,6 @@ export function lookupSponsor(metadata, layerName, code) {
   return sponsor.length > 0 ? sponsor[0].name : 'unknown';
 }
 
-export function getDaysUntilLabel(dateString) {
-  const days = differenceInCalendarDays(new Date(dateString), Date.now());
-
-  switch (days) {
-    case 0:
-      return 'today';
-    case 1:
-      return 'tomorrow';
-    default:
-      return `in ${days} days`;
-  }
-}
-
 export async function getLayerMetadata(layerId) {
   const metadata = await queryService(layerId.toString()).json();
 
@@ -41,10 +29,7 @@ export async function getNewProjects() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `created_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
-        Date.now(),
-        'MM/dd/yyy'
-      )}'`,
+      where: `created_date BETWEEN '${getBeginningOfLastWeek(new Date())}' AND '${getEndOfLastWeek(new Date())}'`,
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
       orderByFields: 'created_date ASC',
       returnGeometry: false,
@@ -80,7 +65,7 @@ export async function getUpcomingProjects() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `comment_deadline >= '${format(Date.now(), 'MM/dd/yyy')}'`,
+      where: `comment_deadline >= '${getToday(new Date())}'`,
       outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action',
       orderByFields: 'comment_deadline ASC',
       returnGeometry: false,
@@ -120,7 +105,7 @@ export async function getUpcomingProjects() {
   keys.forEach((key) => {
     sortedProjectsByDate.push({
       date: key,
-      daysUntil: getDaysUntilLabel(key),
+      daysUntil: getDaysUntilLabel(key, new Date()),
       projects: projectsByDate[key],
     });
   });
@@ -132,9 +117,8 @@ export async function getProjectsWithComments() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `last_edited_date BETWEEN '${format(subDays(Date.now(), 7), 'MM/dd/yyyy')}' AND '${format(
-        Date.now(),
-        'MM/dd/yyy'
+      where: `last_edited_date BETWEEN '${getBeginningOfLastWeek(new Date())}' AND '${getEndOfLastWeek(
+        new Date()
       )}' AND status = 7`,
       outFields: 'ProjectId,sponsor,title_action',
       orderByFields: 'last_edited_date DESC',
