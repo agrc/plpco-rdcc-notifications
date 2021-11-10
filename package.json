@@ -31,7 +31,7 @@
     "handlebars": "^4.7.7",
     "ky": "^0.28.7",
     "prettier": "^2.4.1",
-    "vite": "^2.6.4"
+    "vite": "^2.6.14"
   },
   "dependencies": {
     "@sendgrid/mail": "^7.6.0",
