@@ -12,4 +12,6 @@ dist
 .vscode
 .github
 LICENSE
+.env.template
+*.test.js
 #!include:.gitignore
