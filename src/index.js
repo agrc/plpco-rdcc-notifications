@@ -1,5 +1,14 @@
 import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService.js';
 import { format } from 'date-fns';
+import mailClient from '@sendgrid/mail';
+
+if (!['production', 'test'].includes(process.env.NODE_ENV)) {
+  await import('dotenv/config');
+}
+
+if (process.env.NODE_ENV !== 'test') {
+  mailClient.setApiKey(process.env.SENDGRID_API_KEY);
+}
 
 export const getEmailData = async () => {
   console.log('request accepted');
@@ -19,7 +28,26 @@ export const getEmailData = async () => {
     year: format(Date.now(), 'yyyy'),
   };
 
-  console.log('sending email', JSON.stringify(data));
+  var options = {
+    from: 'rdcc@utah.gov',
+    templateId: process.env.SENDGRID_TEMPLATE,
+    to: process.env.EMAIL_RECIPIENT,
+    dynamicTemplateData: {
+      subject: `RDCC Notice for ${format(Date.now(), 'MM/dd/yyy')}`,
+      ...data,
+    },
+  };
 
-  console.log('completed');
+  try {
+    await mailClient.send(options);
+    console.log('completed');
+  } catch (error) {
+    console.error(error);
+
+    if (error.response) {
+      console.error(error.response.body);
+    }
+  }
 };
+
+getEmailData();

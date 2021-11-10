@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/agrc/plpco-rdcc-notifications#readme",
   "devDependencies": {
+    "dotenv": "^10.0.0",
     "eslint": "^8.2.0",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-prettier": "^4.0.0",
@@ -33,8 +34,9 @@
     "vite": "^2.6.4"
   },
   "dependencies": {
+    "@sendgrid/mail": "^7.6.0",
     "date-fns": "^2.25.0",
-    "got": "^11.8.2"
+    "ky-universal": "^0.9.1"
   },
   "eslintConfig": {
     "parserOptions": {
