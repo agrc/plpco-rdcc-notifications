@@ -1,5 +1,6 @@
 import ky from 'ky-universal';
 import { format } from 'date-fns';
+import FormData from 'form-data';
 import { getBeginningOfLastWeek, getDaysUntilLabel, getEndOfLastWeek, getToday } from './dateService.js';
 
 const maxRecordCount = undefined;
@@ -10,6 +11,11 @@ const queryService = ky.create({
   searchParams: {
     f: 'json',
   },
+});
+const tokenService = ky.create({
+  prefixUrl: 'https://maps.publiclands.utah.gov/portal/sharing/rest',
+  method: 'post',
+  timeout: 25000,
 });
 
 export function lookupSponsor(metadata, layerName, code) {
@@ -25,7 +31,32 @@ export async function getLayerMetadata(layerId) {
   return metadata;
 }
 
+export async function getToken() {
+  const minutes = 5;
+  const formData = new FormData();
+  formData.append('grant_type', 'client_credentials');
+  formData.append('client_id', process.env.CLIENT_ID);
+  formData.append('client_secret', process.env.CLIENT_SECRET);
+  formData.append('expiration', minutes);
+
+  const response = await tokenService('oauth2/token', { body: formData }).json();
+
+  if (response?.error) {
+    console.error(response.error);
+
+    return null;
+  }
+
+  return response.access_token;
+}
+
 export async function getNewProjects() {
+  const token = await getToken();
+
+  if (!token) {
+    return;
+  }
+
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
@@ -34,6 +65,9 @@ export async function getNewProjects() {
       orderByFields: 'created_date ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   }).json();
 
@@ -62,6 +96,12 @@ export async function getNewProjects() {
 }
 
 export async function getUpcomingProjects() {
+  const token = await getToken();
+
+  if (!token) {
+    return;
+  }
+
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
@@ -70,6 +110,9 @@ export async function getUpcomingProjects() {
       orderByFields: 'comment_deadline ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   }).json();
 
@@ -114,6 +157,12 @@ export async function getUpcomingProjects() {
 }
 
 export async function getProjectsWithComments() {
+  const token = await getToken();
+
+  if (!token) {
+    return;
+  }
+
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
@@ -124,6 +173,9 @@ export async function getProjectsWithComments() {
       orderByFields: 'last_edited_date DESC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
+    },
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   }).json();
 
