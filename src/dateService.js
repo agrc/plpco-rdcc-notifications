@@ -1,8 +1,8 @@
-import { differenceInCalendarDays, formatISO, subWeeks, startOfWeek, endOfWeek } from 'date-fns';
+import { differenceInCalendarDays, formatISO9075, subWeeks, startOfWeek, endOfWeek } from 'date-fns';
 
-export const getBeginningOfLastWeek = (date) => formatISO(startOfWeek(subWeeks(date, 1)));
-export const getEndOfLastWeek = (date) => formatISO(endOfWeek(subWeeks(date, 1)));
-export const getToday = (date) => formatISO(date);
+export const getBeginningOfLastWeek = (date) => formatISO9075(startOfWeek(subWeeks(date, 1)));
+export const getEndOfLastWeek = (date) => formatISO9075(endOfWeek(subWeeks(date, 1)));
+export const getToday = (date) => formatISO9075(date);
 
 export const getDaysUntilLabel = (dateString, now) => {
   const days = differenceInCalendarDays(new Date(dateString), now);
