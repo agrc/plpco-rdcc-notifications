@@ -53,4 +53,7 @@ export const getEmailData = async () => {
   }
 };
 
-getEmailData();
+getEmailData().catch((err) => {
+  console.error(err);
+  process.exit(1); // Retry Job Task by exiting the process
+});
