@@ -10,22 +10,25 @@ on:
       - '.firebaserc'
   workflow_dispatch:
 
+permissions:
+  id-token: write
+  contents: read
+
+concurrency:
+  group: '${{ github.head_ref || github.ref }}'
+  cancel-in-progress: true
+
 jobs:
-  deploy-dev:
+  build:
+    name: 🏗 Build
     runs-on: ubuntu-latest
-    environment:
-      name: dev
-    if: github.ref == 'refs/heads/dev'
 
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-
       - name: ⬇️ Set up code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v2
+        uses: actions/setup-node@v3
         with:
           node-version: lts/*
           cache: npm
@@ -36,41 +39,111 @@ jobs:
       - name: 🏗 Run build script
         run: npm run build
 
-      - name: ☁️ Deploy cloud function
-        id: function
-        uses: google-github-actions/deploy-cloud-functions@main
-        with:
-          name: rdcc-email
-          description: function to collect and send the weekly RDCC email
-          runtime: nodejs16
-          source_dir: ./
-          entry_point: getEmailData
-          env_vars: SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
-          event_trigger_type: google.pubsub.topic.publish
-          event_trigger_resource: projects/${{ secrets.PROJECT_ID }}/topics/rdcc-email-topic
-          event_trigger_service: pubsub.googleapis.com
-          project_id: ${{ secrets.PROJECT_ID}}
-          credentials: ${{ secrets.FUNCTION_SERVICE_ACCOUNT }}
-          service_account_email: ${{ secrets.FUNCTION_SERVICE_ACCOUNT_EMAIL }}
+  unit-test:
+    name: 🧪 Unit tests
+    runs-on: ubuntu-latest
 
-      - name: 🪣 Cache firebase
-        uses: actions/cache@v2
-        with:
-          path: ./.firebase
-          key: ${{ runner.OS }}-firebase-${{ hashFiles('**/*.cache') }}
-          restore-keys: |
-            ${{ runner.OS }}-firebase-
-            ${{ runner.OS }}-
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v3
 
-      - name: 🚀 Firebase Deploy
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v3
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.SERVICE_ACCOUNT }}'
-          channelId: live
-          projectId: '${{ secrets.PROJECT_ID }}'
-        env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels
+          node-version: lts/*
+          cache: npm
+
+      - name: 📥 Download dependencies
+        run: npm ci
+
+      - name: 🧪 Run tests
+        run: npm test
+
+  deploy-dev:
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v3
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: 'access_token'
+          create_credentials_file: true
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v1
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            latest
+
+      - name: 🔰 Setup pack
+        uses: buildpacks/github-actions/setup-pack@v4.8.0
+
+      - name: 📦 Build image
+        shell: bash
+        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+
+      - name: 🏺 Push images to artifact registry
+        shell: bash
+        run: docker push ${{ steps.meta.outputs.tags }}
+
+      # - name: 🕰️ Create Cloud Scheduler
+      #   run: |
+      #     if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
+      #       gcloud scheduler jobs create http rdcc-weekly-email \
+      #         --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+      #         --schedule="0 5 * * MON" \
+      #         --time-zone=America/Denver \
+      #         --uri=$(gcloud run services describe app --region us-central1 --format 'value(status.url)') \
+      #         --http-method=POST \
+      #         --max-retry-attempts=0 \
+      #         --min-backoff=30m \
+      #         --max-backoff=1h \
+      #         --max-doublings=1 \
+      #         --attempt-deadline=30m \
+      #         --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+      #         --location=us-central1 \
+      #         --quiet
+      #     else
+      #       gcloud scheduler jobs update http app \
+      #         --description="Trigger the app bot once a week on monday morning" \
+      #         --schedule="0 5 * * MON" \
+      #         --time-zone=America/Denver \
+      #         --uri=$(gcloud run services describe app --region us-central1 --format 'value(status.url)') \
+      #         --http-method=POST \
+      #         --max-retry-attempts=0 \
+      #         --min-backoff=30m \
+      #         --max-backoff=1h \
+      #         --max-doublings=1 \
+      #         --attempt-deadline=30m \
+      #         --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+      #         --location=us-central1 \
+      #         --quiet
+      #     fi
+
+      # - name: ☁️ Deploy cloud function
+      #   id: function
+      #   uses: google-github-actions/deploy-cloud-functions@main
+      #   with:
+      #     env_vars: SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
 
   deploy-prod:
     runs-on: ubuntu-latest
@@ -79,9 +152,6 @@ jobs:
     if: github.ref == 'refs/heads/main'
 
     steps:
-      - name: 🛑 Cancel Previous Runs
-        uses: styfle/cancel-workflow-action@0.9.0
-
       - name: ⬇️ Set up code
         uses: actions/checkout@v2
 
