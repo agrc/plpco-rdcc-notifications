@@ -11,8 +11,6 @@ if (process.env.NODE_ENV !== 'test') {
 }
 
 export const getEmailData = async () => {
-  console.log('request accepted');
-
   const [newProjects, newProjectCount] = await getNewProjects();
   const [upcomingProjects, upcomingProjectCount] = await getUpcomingProjects();
   const [projectsWithComments, projectsWithCommentsData] = await getProjectsWithComments();
@@ -52,8 +50,3 @@ export const getEmailData = async () => {
     }
   }
 };
-
-getEmailData().catch((err) => {
-  console.error(err);
-  process.exit(1); // Retry Job Task by exiting the process
-});

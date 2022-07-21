@@ -1,0 +1,16 @@
+[project]
+id = "plpco-rdcc-notifications"
+name = "plpco-rdcc-notifications"
+version = "1.0.0-beta.1"
+authors = ["sgourley@utah.gov"]
+license = "MIT"
+
+[build]
+include = [
+  "index.js",
+  "src/*.js",
+  "package.json",
+  "package-lock.json",
+  "Procfile",
+  "node_modules",
+]

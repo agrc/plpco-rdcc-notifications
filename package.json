@@ -4,6 +4,9 @@
   "description": "Weekly email notifications for RDCC projects",
   "main": "src/index.js",
   "type": "module",
+  "engines": {
+    "node": "16"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
