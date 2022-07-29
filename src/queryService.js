@@ -3,7 +3,8 @@ import { format } from 'date-fns';
 import { getBeginningOfLastWeek, getDaysUntilLabel, getEndOfLastWeek, getToday } from './dateService.js';
 
 const maxRecordCount = undefined;
-const featureService = 'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project/FeatureServer';
+const featureService =
+  'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project_Public_View/FeatureServer';
 const queryService = ky.create({
   timeout: 25000,
   prefixUrl: featureService,
@@ -29,8 +30,10 @@ export async function getNewProjects() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `created_date BETWEEN '${getBeginningOfLastWeek(new Date())}' AND '${getEndOfLastWeek(new Date())}'`,
-      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
+      where: `created_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(new Date())}' AND TIMESTAMP '${getEndOfLastWeek(
+        new Date()
+      )}'`,
+      outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
       orderByFields: 'created_date ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
@@ -65,8 +68,8 @@ export async function getUpcomingProjects() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `comment_deadline >= '${getToday(new Date())}'`,
-      outFields: 'ProjectId,sponsor,comment_deadline,project_abstract,title_action',
+      where: `comment_deadline>=TIMESTAMP '${getToday(new Date())}'`,
+      outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action',
       orderByFields: 'comment_deadline ASC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
@@ -117,10 +120,10 @@ export async function getProjectsWithComments() {
   const featureSet = await queryService('0/query', {
     searchParams: {
       f: 'json',
-      where: `last_edited_date BETWEEN '${getBeginningOfLastWeek(new Date())}' AND '${getEndOfLastWeek(
+      where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
         new Date()
-      )}' AND status = 7`,
-      outFields: 'ProjectId,sponsor,title_action',
+      )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='State Comment Published'`,
+      outFields: 'ProjectID,sponsor,title_action',
       orderByFields: 'last_edited_date DESC',
       returnGeometry: false,
       resultRecordCount: maxRecordCount,
