@@ -13,6 +13,20 @@ const queryService = ky.create({
   },
 });
 
+const logQuery = async (url, searchParams) => {
+  console.log(searchParams);
+
+  const featureSet = await queryService(url, {
+    searchParams,
+  }).json();
+
+  if (featureSet.error) {
+    throw new Error(featureSet.error.message);
+  }
+
+  return featureSet;
+};
+
 export function lookupSponsor(metadata, layerName, code) {
   const sponsors = metadata.fields.filter((field) => field.name === layerName)[0].domain.codedValues;
   const sponsor = sponsors.filter((sponsor) => sponsor.code === code);
@@ -27,22 +41,16 @@ export async function getLayerMetadata(layerId) {
 }
 
 export async function getNewProjects() {
-  const featureSet = await queryService('0/query', {
-    searchParams: {
-      f: 'json',
-      where: `created_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(new Date())}' AND TIMESTAMP '${getEndOfLastWeek(
-        new Date()
-      )}'`,
-      outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
-      orderByFields: 'created_date ASC',
-      returnGeometry: false,
-      resultRecordCount: maxRecordCount,
-    },
-  }).json();
-
-  if (featureSet.error) {
-    throw new Error(featureSet.error.message);
-  }
+  const featureSet = await logQuery('0/query', {
+    f: 'json',
+    where: `created_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(new Date())}' AND TIMESTAMP '${getEndOfLastWeek(
+      new Date()
+    )}'`,
+    outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
+    orderByFields: 'created_date ASC',
+    returnGeometry: false,
+    resultRecordCount: maxRecordCount,
+  });
 
   let metadata;
   if (featureSet.features.length > 0) {
@@ -65,20 +73,14 @@ export async function getNewProjects() {
 }
 
 export async function getUpcomingProjects() {
-  const featureSet = await queryService('0/query', {
-    searchParams: {
-      f: 'json',
-      where: `comment_deadline>=TIMESTAMP '${getToday(new Date())}'`,
-      outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action',
-      orderByFields: 'comment_deadline ASC',
-      returnGeometry: false,
-      resultRecordCount: maxRecordCount,
-    },
-  }).json();
-
-  if (featureSet.error) {
-    throw new Error(featureSet.error.message);
-  }
+  const featureSet = await logQuery('0/query', {
+    f: 'json',
+    where: `comment_deadline>=TIMESTAMP '${getToday(new Date())}'`,
+    outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action',
+    orderByFields: 'comment_deadline ASC',
+    returnGeometry: false,
+    resultRecordCount: maxRecordCount,
+  });
 
   let metadata;
   if (featureSet.features.length > 0) {
@@ -117,22 +119,16 @@ export async function getUpcomingProjects() {
 }
 
 export async function getProjectsWithComments() {
-  const featureSet = await queryService('0/query', {
-    searchParams: {
-      f: 'json',
-      where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
-        new Date()
-      )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='State Comment Published'`,
-      outFields: 'ProjectID,sponsor,title_action',
-      orderByFields: 'last_edited_date DESC',
-      returnGeometry: false,
-      resultRecordCount: maxRecordCount,
-    },
-  }).json();
-
-  if (featureSet.error) {
-    throw new Error(featureSet.error.message);
-  }
+  const featureSet = await logQuery('0/query', {
+    f: 'json',
+    where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
+      new Date()
+    )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='State Comment Published'`,
+    outFields: 'ProjectID,sponsor,title_action',
+    orderByFields: 'last_edited_date DESC',
+    returnGeometry: false,
+    resultRecordCount: maxRecordCount,
+  });
 
   let metadata;
   if (featureSet.features.length > 0) {
