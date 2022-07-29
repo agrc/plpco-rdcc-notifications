@@ -59,7 +59,57 @@ jobs:
       - name: 🧪 Run tests
         run: npm test
 
+  deploy-firebase:
+    name: Deploy preview to firebase
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v3
+
+      - name: ⎔ Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: lts/*
+          cache: npm
+
+      - name: 📥 Download dependencies
+        run: npm ci
+
+      - name: 🏗 Run build script
+        run: npm run build
+
+      - name: 🪣 Cache firebase
+        uses: actions/cache@v2
+        with:
+          path: ./.firebase
+          key: ${{ runner.OS }}-firebase-${{ hashFiles('**/*.cache') }}
+          restore-keys: |
+            ${{ runner.OS }}-firebase-
+            ${{ runner.OS }}-
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
+        with:
+          access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          create_credentials_file: true
+
+      - name: 🚀 Firebase Deploy
+        run: >
+          npx firebase-tools deploy
+          --only hosting
+          --project ${{ secrets.PROJECT_ID }}
+        env:
+          FIREBASE_CLI_PREVIEWS: hostingchannels
+
   deploy-dev:
+    name: Deploy GCP infrastructure
     runs-on: ubuntu-latest
     environment:
       name: dev
