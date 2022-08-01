@@ -1,14 +1,21 @@
 {
   "cSpell.words": [
+    "accesstoken",
+    "backoff",
+    "buildpacks",
+    "cicd",
     "firebaserc",
     "gcloud",
     "googleapis",
+    "gserviceaccount",
     "hostingchannels",
+    "oidc",
     "personalizations",
     "PLPCO",
     "RDCC",
     "sendgrid",
     "styfle",
+    "templating",
     "ugrc",
     "vite"
   ]
