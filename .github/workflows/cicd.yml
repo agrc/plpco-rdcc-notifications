@@ -160,12 +160,14 @@ jobs:
           if [ ! "$(gcloud alpha run jobs list | grep notification)" ]; then
             gcloud alpha run jobs create notification \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --region us-central1
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --tasks 1 \
               --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           else
             gcloud alpha run jobs update notification \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+                --region us-central1
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
                 --tasks 1 \
                 --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
