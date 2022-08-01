@@ -157,20 +157,22 @@ jobs:
 
       - name: 🚀 Deploy to Cloud Run
         run: |
-          if [ ! "$(gcloud alpha run jobs list | grep notification)" ]; then
-            gcloud alpha run jobs create notification \
+          if [ ! "$(gcloud beta run jobs list | grep notification)" ]; then
+            gcloud beta run jobs create notification \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --region us-central1
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --tasks 1 \
-              --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+              --set-secrets=/secrets/email/key=sendgrid-api:latest \
+              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           else
-            gcloud alpha run jobs update notification \
+            gcloud beta run jobs update notification \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --region us-central1
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+                --update-secrets=/secrets/email/key=sendgrid-api:latest \
                 --tasks 1 \
-                --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           fi
 
       - name: 🕰️ Create Cloud Scheduler
