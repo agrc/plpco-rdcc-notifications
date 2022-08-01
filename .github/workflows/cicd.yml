@@ -161,16 +161,14 @@ jobs:
             gcloud alpha run jobs create notification \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --region us-central1
               --tasks 1 \
-              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+              --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           else
             gcloud alpha run jobs update notification \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-                --region us-central1
                 --tasks 1 \
-                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+                --set-env-vars SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           fi
 
       - name: 🕰️ Create Cloud Scheduler
