@@ -1,0 +1,17 @@
+.git
+favicon.svg
+demo.js
+style.css
+template.js
+index.html
+readme.md
+firebase.json
+.firebaserc
+node_modules
+dist
+.vscode
+.github
+LICENSE
+.env.template
+*.test.js
+#!include:.gitignore
