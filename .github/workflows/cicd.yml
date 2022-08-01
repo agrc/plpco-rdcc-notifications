@@ -165,7 +165,7 @@ jobs:
           if [ ! "$(gcloud beta run jobs list | grep notification)" ]; then
             gcloud beta run jobs create notification \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-              --region us-central1
+              --region us-central1 \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --tasks 1 \
               --set-secrets=/secrets/email/key=sendgrid-api:latest \
@@ -173,7 +173,7 @@ jobs:
           else
             gcloud beta run jobs update notification \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
-                --region us-central1
+                --region us-central1 \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
                 --update-secrets=/secrets/email/key=sendgrid-api:latest \
                 --tasks 1 \
