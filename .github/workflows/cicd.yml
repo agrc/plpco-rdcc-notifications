@@ -1,10 +1,10 @@
-name: firebase deploy
+name: CI/CD
 
 on:
   push:
     paths:
       - 'src/**'
-      - '.github/workflows/nodejs.yml'
+      - '.github/workflows/cicd.yml'
       - 'package-lock.json'
       - 'firebase.json'
       - '.firebaserc'
@@ -59,7 +59,7 @@ jobs:
       - name: 🧪 Run tests
         run: npm test
 
-  deploy-firebase:
+  deploy-demo-dev:
     name: Deploy preview to firebase
     runs-on: ubuntu-latest
     environment:
@@ -108,7 +108,7 @@ jobs:
         env:
           FIREBASE_CLI_PREVIEWS: hostingchannels
 
-  deploy-dev:
+  deploy-gcp-dev:
     name: Deploy GCP infrastructure
     runs-on: ubuntu-latest
     environment:
@@ -155,45 +155,47 @@ jobs:
         shell: bash
         run: docker push ${{ steps.meta.outputs.tags }}
 
-      # - name: 🕰️ Create Cloud Scheduler
-      #   run: |
-      #     if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
-      #       gcloud scheduler jobs create http rdcc-weekly-email \
-      #         --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
-      #         --schedule="0 5 * * MON" \
-      #         --time-zone=America/Denver \
-      #         --uri=$(gcloud run services describe app --region us-central1 --format 'value(status.url)') \
-      #         --http-method=POST \
-      #         --max-retry-attempts=0 \
-      #         --min-backoff=30m \
-      #         --max-backoff=1h \
-      #         --max-doublings=1 \
-      #         --attempt-deadline=30m \
-      #         --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-      #         --location=us-central1 \
-      #         --quiet
-      #     else
-      #       gcloud scheduler jobs update http app \
-      #         --description="Trigger the app bot once a week on monday morning" \
-      #         --schedule="0 5 * * MON" \
-      #         --time-zone=America/Denver \
-      #         --uri=$(gcloud run services describe app --region us-central1 --format 'value(status.url)') \
-      #         --http-method=POST \
-      #         --max-retry-attempts=0 \
-      #         --min-backoff=30m \
-      #         --max-backoff=1h \
-      #         --max-doublings=1 \
-      #         --attempt-deadline=30m \
-      #         --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-      #         --location=us-central1 \
-      #         --quiet
-      #     fi
+      - name: 🚀 Deploy to Cloud Run
+        run: |
+          if [ ! "$(gcloud alpha run jobs list | grep notification)" ]; then
+            gcloud alpha run jobs create notification \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --region us-central1
+              --tasks 1 \
+              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+          else
+            gcloud alpha run jobs update notification \
+                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+                --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+                --region us-central1
+                --tasks 1 \
+                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+          fi
 
-      # - name: ☁️ Deploy cloud function
-      #   id: function
-      #   uses: google-github-actions/deploy-cloud-functions@main
-      #   with:
-      #     env_vars: SENDGRID_API_KEY=${{ secrets.SENDGRID_API_KEY }},SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+      - name: 🕰️ Create Cloud Scheduler
+        run: |
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
+            gcloud scheduler jobs create http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/job:run" \
+              --http-method=POST \
+              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --quiet
+          else
+            gcloud scheduler jobs update http app \
+              --description="Trigger the app bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/job:run" \
+              --http-method=POST \
+              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --quiet
+          fi
 
   deploy-prod:
     runs-on: ubuntu-latest
