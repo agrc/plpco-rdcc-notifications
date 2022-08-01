@@ -162,8 +162,8 @@ jobs:
 
       - name: 🚀 Deploy to Cloud Run
         run: |
-          if [ ! "$(gcloud beta run jobs list | grep notification)" ]; then
-            gcloud beta run jobs create notification \
+          if [ ! "$(gcloud beta run jobs list | grep notify)" ]; then
+            gcloud beta run jobs create notify \
               --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --region us-central1 \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
@@ -171,7 +171,7 @@ jobs:
               --set-secrets=/secrets/email/key=sendgrid-api:latest \
               --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
           else
-            gcloud beta run jobs update notification \
+            gcloud beta run jobs update notify \
                 --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --region us-central1 \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
@@ -187,7 +187,7 @@ jobs:
               --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
               --schedule="0 5 * * MON" \
               --time-zone=America/Denver \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/job:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
               --http-method=POST \
               --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --location=us-central1 \
@@ -197,7 +197,7 @@ jobs:
               --description="Trigger the app bot once a week on monday morning" \
               --schedule="0 5 * * MON" \
               --time-zone=America/Denver \
-              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/job:run" \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
               --http-method=POST \
               --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --location=us-central1 \
