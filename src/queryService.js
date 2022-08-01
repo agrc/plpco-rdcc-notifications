@@ -123,7 +123,7 @@ export async function getProjectsWithComments() {
     f: 'json',
     where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
       new Date()
-    )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='State Comment Published'`,
+    )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='11'`,
     outFields: 'ProjectID,sponsor,title_action',
     orderByFields: 'last_edited_date DESC',
     returnGeometry: false,
