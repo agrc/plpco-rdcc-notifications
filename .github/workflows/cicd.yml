@@ -164,20 +164,24 @@ jobs:
         run: |
           if [ ! "$(gcloud beta run jobs list | grep notify)" ]; then
             gcloud beta run jobs create notify \
-              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
               --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
-              --tasks 1 \
               --set-secrets=/secrets/email/key=sendgrid-api:latest \
-              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }} \
+              --tasks 1 \
+              --max-retries 3 \
+              --parallelism 1
           else
             gcloud beta run jobs update notify \
-                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --region us-central1 \
+                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
                 --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
                 --update-secrets=/secrets/email/key=sendgrid-api:latest \
+                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }} \
                 --tasks 1 \
-                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+                --max-retries 3 \
+                --parallelism 1
           fi
 
       - name: 🕰️ Create Cloud Scheduler
@@ -188,9 +192,9 @@ jobs:
               --schedule="0 5 * * MON" \
               --time-zone=America/Denver \
               --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
-              --http-method=POST \
-              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --location=us-central1 \
+              --max-retry-attempts=0 \
               --quiet
           else
             gcloud scheduler jobs update http app \
@@ -198,9 +202,9 @@ jobs:
               --schedule="0 5 * * MON" \
               --time-zone=America/Denver \
               --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
-              --http-method=POST \
-              --oidc-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
               --location=us-central1 \
+              --max-retry-attempts=0 \
               --quiet
           fi
 
