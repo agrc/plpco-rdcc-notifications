@@ -4,7 +4,7 @@ export const template = Handlebars.compile(`
   <div>
     <p>This is the RDCC notice for the {{week}} week of {{year}}. This notice includes the following sections:</p>
     <ul>
-      <li><strong><a href="#new-projects">New Projects</a></strong>: Projects approved by PLPCO last week
+      <li><strong><a href="#new-projects">New Projects</a></strong>: Projects submitted to the RDCC
       <li><strong><a href="#upcoming-projects">Upcoming Dates</a></strong>: Projects with comment deadlines next week
       <li><strong><a href="#project-comments">State Comments Published</a></strong>: Projects in which state comments were published last week.
     </ul>
