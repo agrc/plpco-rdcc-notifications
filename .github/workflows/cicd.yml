@@ -64,6 +64,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: dev
+      url: https://ut-dts-agrc-plpco-rdcc-dev.web.app/
     if: github.ref == 'refs/heads/dev'
 
     steps:
