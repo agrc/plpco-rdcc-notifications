@@ -208,43 +208,103 @@ jobs:
               --quiet
           fi
 
-  deploy-prod:
+  deploy-gcp-prod:
+    name: Deploy GCP infrastructure
     runs-on: ubuntu-latest
+    needs: [build, unit-test]
     environment:
       name: prod
     if: github.ref == 'refs/heads/main'
 
     steps:
       - name: ⬇️ Set up code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
-      - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v2
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v0
         with:
-          node-version: lts/*
-          cache: npm
+          access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: 'access_token'
+          create_credentials_file: true
 
-      - name: 📥 Download dependencies
-        run: npm ci
-
-      - name: 🏗 Run build script
-        run: npm run build
-
-      - name: 🪣 Cache firebase
-        uses: actions/cache@v2
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
         with:
-          path: ./.firebase
-          key: ${{ runner.OS }}-firebase-${{ hashFiles('**/*.cache') }}
-          restore-keys: |
-            ${{ runner.OS }}-firebase-
-            ${{ runner.OS }}-
+          install_components: 'beta'
 
-      - name: 🚀 Firebase Deploy
-        uses: FirebaseExtended/action-hosting-deploy@v0
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v1
         with:
-          repoToken: '${{ secrets.GITHUB_TOKEN }}'
-          firebaseServiceAccount: '${{ secrets.SERVICE_ACCOUNT }}'
-          channelId: live
-          projectId: '${{ secrets.PROJECT_ID }}'
-        env:
-          FIREBASE_CLI_PREVIEWS: hostingchannels
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v3
+        with:
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            latest
+
+      - name: 🔰 Setup pack
+        uses: buildpacks/github-actions/setup-pack@v4.8.0
+
+      - name: 📦 Build image
+        shell: bash
+        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+
+      - name: 🏺 Push images to artifact registry
+        shell: bash
+        run: docker push ${{ steps.meta.outputs.tags }}
+
+      - name: 🚀 Deploy to Cloud Run
+        run: |
+          if [ ! "$(gcloud beta run jobs list | grep notify)" ]; then
+            gcloud beta run jobs create notify \
+              --region us-central1 \
+              --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+              --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --set-secrets=/secrets/email/key=sendgrid-api:latest \
+              --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }} \
+              --tasks 1 \
+              --max-retries 3 \
+              --parallelism 1
+          else
+            gcloud beta run jobs update notify \
+                --region us-central1 \
+                --image us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest \
+                --service-account cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+                --update-secrets=/secrets/email/key=sendgrid-api:latest \
+                --set-env-vars SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }},EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }} \
+                --tasks 1 \
+                --max-retries 3 \
+                --parallelism 1
+          fi
+
+      - name: 🕰️ Create Cloud Scheduler
+        run: |
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
+            gcloud scheduler jobs create http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          else
+            gcloud scheduler jobs update http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          fi
