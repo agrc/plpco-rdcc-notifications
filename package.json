@@ -40,7 +40,7 @@
   },
   "dependencies": {
     "@sendgrid/mail": "^7.7.0",
-    "date-fns": "^2.29.1",
+    "date-fns": "^2.29.2",
     "ky-universal": "^0.10.1"
   },
   "eslintConfig": {
