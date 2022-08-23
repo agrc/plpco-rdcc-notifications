@@ -26,7 +26,7 @@ if (process.env.NODE_ENV !== 'test') {
     throw new Error('No SendGrid API key found');
   }
 
-  mailClient.setApiKey(apiKey);
+  mailClient.setApiKey(apiKey.replace(/\r?\n|\r|\s/gm, ''));
 }
 
 export const getEmailData = async () => {
