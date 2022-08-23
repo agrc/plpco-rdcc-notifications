@@ -145,7 +145,7 @@ jobs:
 
       - name: 🏷️ Extract tags from GitHub
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
           tags: |
@@ -246,7 +246,7 @@ jobs:
 
       - name: 🏷️ Extract tags from GitHub
         id: meta
-        uses: docker/metadata-action@v3
+        uses: docker/metadata-action@v4
         with:
           images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
           tags: |
