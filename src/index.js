@@ -58,14 +58,6 @@ export const getEmailData = async () => {
     },
   };
 
-  try {
-    await mailClient.send(options);
-    console.log('completed');
-  } catch (error) {
-    console.error(error);
-
-    if (error.response) {
-      console.error(error.response.body);
-    }
-  }
+  await mailClient.send(options);
+  console.log('completed');
 };
