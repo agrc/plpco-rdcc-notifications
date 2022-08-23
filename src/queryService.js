@@ -90,17 +90,18 @@ export async function getUpcomingProjects() {
   const projectsByDate = {};
 
   featureSet.features.forEach((feature) => {
-    const date = format(new Date(feature.attributes.comment_deadline), 'MM/dd/yyyy');
-    if (!projectsByDate[date]) {
-      projectsByDate[date] = [];
+    const key = format(new Date(feature.attributes.comment_deadline), 'yyyy/MM/dd');
+    if (!projectsByDate[key]) {
+      projectsByDate[key] = [];
     }
 
-    projectsByDate[date].push({
+    projectsByDate[key].push({
       id: feature.attributes.ProjectID,
       abstract: feature.attributes.project_abstract,
       title: feature.attributes.title_action,
       sponsor: lookupSponsor(metadata, 'sponsor', feature.attributes.sponsor),
-      commentDeadline: date,
+      commentDeadline: format(new Date(feature.attributes.comment_deadline), 'MM/dd/yyyy'),
+      date: feature.attributes.comment_deadline,
     });
   });
 
@@ -109,7 +110,7 @@ export async function getUpcomingProjects() {
   const sortedProjectsByDate = [];
   keys.forEach((key) => {
     sortedProjectsByDate.push({
-      date: key,
+      date: format(new Date(projectsByDate[key][0].date), 'MM/dd/yyyy'),
       daysUntil: getDaysUntilLabel(key, new Date()),
       projects: projectsByDate[key],
     });
