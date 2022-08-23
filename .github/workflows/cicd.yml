@@ -84,7 +84,7 @@ jobs:
         run: npm run build
 
       - name: 🪣 Cache firebase
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: ./.firebase
           key: ${{ runner.OS }}-firebase-${{ hashFiles('**/*.cache') }}
