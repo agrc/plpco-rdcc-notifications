@@ -29,10 +29,10 @@ if (process.env.NODE_ENV !== 'test') {
   mailClient.setApiKey(apiKey.replace(/\r?\n|\r|\s/gm, ''));
 }
 
-export const getEmailData = async () => {
-  const [newProjects, newProjectCount] = await getNewProjects();
-  const [upcomingProjects, upcomingProjectCount] = await getUpcomingProjects();
-  const [projectsWithComments, projectsWithCommentsData] = await getProjectsWithComments();
+export const getEmailData = async (client) => {
+  const [newProjects, newProjectCount] = await getNewProjects(client);
+  const [upcomingProjects, upcomingProjectCount] = await getUpcomingProjects(client);
+  const [projectsWithComments, projectsWithCommentsData] = await getProjectsWithComments(client);
 
   const data = {
     newProjects,

@@ -1,19 +1,9 @@
-import ky from 'ky-universal';
 import { format } from 'date-fns';
 import { getBeginningOfLastWeek, getDaysUntilLabel, getEndOfLastWeek, getToday } from './dateService.js';
 
 const maxRecordCount = undefined;
-const featureService =
-  'https://maps.publiclands.utah.gov/server/rest/services/RDCC/RDCC_Project_Public_View/FeatureServer';
-const queryService = ky.create({
-  timeout: 25000,
-  prefixUrl: featureService,
-  searchParams: {
-    f: 'json',
-  },
-});
 
-const logQuery = async (url, searchParams) => {
+const logQuery = async (queryService, url, searchParams) => {
   console.log(searchParams);
 
   const featureSet = await queryService(url, {
@@ -34,14 +24,14 @@ export function lookupSponsor(metadata, layerName, code) {
   return sponsor.length > 0 ? sponsor[0].name : 'unknown';
 }
 
-export async function getLayerMetadata(layerId) {
+export async function getLayerMetadata(queryService, layerId) {
   const metadata = await queryService(layerId.toString()).json();
 
   return metadata;
 }
 
-export async function getNewProjects() {
-  const featureSet = await logQuery('0/query', {
+export async function getNewProjects(client) {
+  const featureSet = await logQuery(client, '0/query', {
     f: 'json',
     where: `created_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(new Date())}' AND TIMESTAMP '${getEndOfLastWeek(
       new Date()
@@ -54,7 +44,7 @@ export async function getNewProjects() {
 
   let metadata;
   if (featureSet.features.length > 0) {
-    metadata = await getLayerMetadata(0);
+    metadata = await getLayerMetadata(client, 0);
   }
 
   const newProjects = featureSet.features.map((feature) => {
@@ -72,8 +62,8 @@ export async function getNewProjects() {
   return [newProjects, featureSet.features.length];
 }
 
-export async function getUpcomingProjects() {
-  const featureSet = await logQuery('0/query', {
+export async function getUpcomingProjects(client) {
+  const featureSet = await logQuery(client, '0/query', {
     f: 'json',
     where: `comment_deadline>=TIMESTAMP '${getToday(new Date())}'`,
     outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action',
@@ -84,7 +74,7 @@ export async function getUpcomingProjects() {
 
   let metadata;
   if (featureSet.features.length > 0) {
-    metadata = await getLayerMetadata(0);
+    metadata = await getLayerMetadata(client, 0);
   }
 
   const projectsByDate = {};
@@ -119,8 +109,8 @@ export async function getUpcomingProjects() {
   return [sortedProjectsByDate, featureSet.features.length];
 }
 
-export async function getProjectsWithComments() {
-  const featureSet = await logQuery('0/query', {
+export async function getProjectsWithComments(client) {
+  const featureSet = await logQuery(client, '0/query', {
     f: 'json',
     where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
       new Date()
@@ -133,7 +123,7 @@ export async function getProjectsWithComments() {
 
   let metadata;
   if (featureSet.features.length > 0) {
-    metadata = await getLayerMetadata(0);
+    metadata = await getLayerMetadata(client, 0);
   }
 
   const projectsWithComments = featureSet.features.map((feature) => {
