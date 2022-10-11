@@ -11,6 +11,7 @@
     "dev": "vite",
     "build": "vite build",
     "serve": "vite preview",
+    "local": "NODE_ENV=\"development\" node index.js",
     "test": "TZ=UTC node --experimental-vm-modules node_modules/jest/bin/jest.js"
   },
   "repository": {
