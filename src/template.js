@@ -8,7 +8,7 @@ export const template = Handlebars.compile(`
       <li><strong><a href="#upcoming-projects">Upcoming Dates</a></strong>: Projects with comment deadlines next week
       <li><strong><a href="#project-comments">State Comments Published</a></strong>: Projects in which state comments were published last week.
     </ul>
-    <p>For more project information, search for a specific project number at <a href="https://rdcc.utah.gov">rdcc.utah.gov</a>. For questions, please email us at <a href="mailto:rdcc@utah.gov?subject={{week}} RDCC notice">rdcc@utah.gov</a>.</p>
+    <p>For more project information, search for a specific project number at https://rdcc.utah.gov. For questions, please email us at <a href="mailto:rdcc@utah.gov?subject={{week}} RDCC notice">rdcc@utah.gov</a>.</p>
   </div>
 
   <h2 id="new-projects">{{newProjectCount}} New Projects</h2>
