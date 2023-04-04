@@ -9,6 +9,7 @@
   },
   "scripts": {
     "dev": "vite",
+    "build:vite": "vite build",
     "serve": "vite preview",
     "local": "NODE_ENV=\"development\" node index.js",
     "test": "TZ=UTC node --experimental-vm-modules node_modules/jest/bin/jest.js"

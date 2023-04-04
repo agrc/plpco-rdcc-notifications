@@ -37,7 +37,7 @@ jobs:
         run: npm ci
 
       - name: 🏗 Run build script
-        run: npm run build
+        run: npm run build:vite
 
   unit-test:
     name: 🧪 Unit tests
@@ -81,7 +81,7 @@ jobs:
         run: npm ci
 
       - name: 🏗 Run build script
-        run: npm run build
+        run: npm run build:vite
 
       - name: 🪣 Cache firebase
         uses: actions/cache@v3
@@ -152,7 +152,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@5.1.0.
+        uses: buildpacks/github-actions/setup-pack@5.1.0
 
       - name: 📦 Build image
         shell: bash
