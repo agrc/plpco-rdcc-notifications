@@ -152,7 +152,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@5.1.0
+        uses: buildpacks/github-actions/setup-pack@5.2.0
 
       - name: 📦 Build image
         shell: bash
