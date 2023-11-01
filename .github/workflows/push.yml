@@ -30,7 +30,7 @@ jobs:
           show-progress: false
 
       - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
@@ -52,7 +52,7 @@ jobs:
           show-progress: false
 
       - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
@@ -78,7 +78,7 @@ jobs:
           show-progress: false
 
       - name: ⎔ Setup Node.js
-        uses: actions/setup-node@v3
+        uses: actions/setup-node@v4
         with:
           node-version: lts/*
           cache: npm
@@ -160,7 +160,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.4.0
+        uses: buildpacks/github-actions/setup-pack@v5.5.0
 
       - name: 📦 Build image
         shell: bash
@@ -263,7 +263,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.4.0
+        uses: buildpacks/github-actions/setup-pack@v5.5.0
 
       - name: 📦 Build image
         shell: bash
