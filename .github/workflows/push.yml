@@ -100,7 +100,7 @@ jobs:
 
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
@@ -131,7 +131,7 @@ jobs:
 
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
@@ -140,7 +140,7 @@ jobs:
           create_credentials_file: true
 
       - name: ☁️ Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           install_components: 'beta'
 
@@ -160,7 +160,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.5.0
+        uses: buildpacks/github-actions/setup-pack@v5.5.1
 
       - name: 📦 Build image
         shell: bash
@@ -234,7 +234,7 @@ jobs:
 
       - name: 🗝️ Authenticate to Google Cloud
         id: auth
-        uses: google-github-actions/auth@v1
+        uses: google-github-actions/auth@v2
         with:
           access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
           workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
@@ -243,7 +243,7 @@ jobs:
           create_credentials_file: true
 
       - name: ☁️ Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v1
+        uses: google-github-actions/setup-gcloud@v2
         with:
           install_components: 'beta'
 
@@ -263,7 +263,7 @@ jobs:
             latest
 
       - name: 🔰 Setup pack
-        uses: buildpacks/github-actions/setup-pack@v5.5.0
+        uses: buildpacks/github-actions/setup-pack@v5.5.1
 
       - name: 📦 Build image
         shell: bash
