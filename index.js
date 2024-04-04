@@ -1,13 +1,10 @@
-import got from 'got';
+import ky from 'ky';
 import { featureService } from './src/data.js';
 import { getEmailData } from './src/index.js';
 
-const client = got.extend({
-  timeout: {
-    request: 25000,
-  },
+const client = ky.extend({
+  timeout: 25000,
   prefixUrl: featureService,
-  responseType: 'json',
   searchParams: {
     f: 'json',
   },
