@@ -4,7 +4,7 @@ import { getBeginningOfLastWeek, getDaysUntilLabel, getEndOfLastWeek, getToday }
 const maxRecordCount = undefined;
 
 const logQuery = async (queryService, url, searchParams) => {
-  console.log(searchParams);
+  console.log('log query: ', searchParams);
 
   const featureSet = await queryService(url, {
     searchParams,
@@ -34,7 +34,7 @@ export async function getNewProjects(client) {
   const featureSet = await logQuery(client, '0/query', {
     f: 'json',
     where: `created_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(new Date())}' AND TIMESTAMP '${getEndOfLastWeek(
-      new Date()
+      new Date(),
     )}'`,
     outFields: 'ProjectID,sponsor,comment_deadline,project_abstract,title_action,county,created_date',
     orderByFields: 'created_date ASC',
@@ -113,7 +113,7 @@ export async function getProjectsWithComments(client) {
   const featureSet = await logQuery(client, '0/query', {
     f: 'json',
     where: `(last_edited_date BETWEEN TIMESTAMP '${getBeginningOfLastWeek(
-      new Date()
+      new Date(),
     )}' AND TIMESTAMP '${getEndOfLastWeek(new Date())}') AND status='7'`,
     outFields: 'ProjectID,sponsor,title_action',
     orderByFields: 'last_edited_date DESC',

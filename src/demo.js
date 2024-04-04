@@ -29,7 +29,7 @@ const startup = async () => {
     year: format(Date.now(), 'yyyy'),
   };
 
-  console.log(data);
+  console.log('query data', data);
   document.querySelector('#app').innerHTML = `<main>${template(data)}</main>`;
 };
 

@@ -8,22 +8,29 @@ if (!['production', 'test'].includes(process.env.NODE_ENV)) {
 
 if (process.env.NODE_ENV !== 'test') {
   const fs = await import('fs');
-  let apiKey = undefined;
+
+  let found = false;
+  let apiKey;
+  console.log('fetching sendgrid api key...');
   try {
     apiKey = fs.readFileSync('/secrets/email/key', 'utf8');
-    console.log('found in root');
+    found = true;
+    console.log('☑️ found in root');
   } catch {
-    console.warn('secret not found at root. Checking local');
+    console.warn('secret not found at root - checking local...');
   }
 
-  try {
-    apiKey = fs.readFileSync('secrets/email/key', 'utf8');
-  } catch {
-    console.warn('secret not found locally. Is it mounted?');
+  if (!found) {
+    try {
+      apiKey = fs.readFileSync('secrets/email/key', 'utf8');
+      console.log('☑️ found local');
+    } catch {
+      console.warn('secret not found locally. Have you created the key file and set the value?');
+    }
   }
 
   if (!apiKey) {
-    throw new Error('No SendGrid API key found');
+    throw new Error('No SendGrid API key found.');
   }
 
   mailClient.setApiKey(apiKey.replace(/\r?\n|\r|\s/gm, ''));

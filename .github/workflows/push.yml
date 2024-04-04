@@ -107,7 +107,7 @@ jobs:
           service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           create_credentials_file: true
 
-      - name: 🚀 Firebase Deploy
+      - name: 🚀 Firebase deploy
         run: >
           npx firebase-tools deploy
           --only hosting
