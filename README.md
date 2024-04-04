@@ -1,6 +1,6 @@
 # plpco-rdcc-notifications
 
-[![firebase deploy](https://github.com/agrc/plpco-rdcc-notifications/actions/workflows/nodejs.yml/badge.svg)](https://github.com/agrc/plpco-rdcc-notifications/actions/workflows/nodejs.yml)
+[![firebase deploy](https://github.com/agrc/plpco-rdcc-notifications/actions/workflows/push.yml/badge.svg)](https://github.com/agrc/plpco-rdcc-notifications/actions/workflows/push.yml)
 
 The PLPCO RDCC email is a notification system to supplement an esri data collection system consisting of survey123 etc. This notification system uses the Google Cloud to schedule a Monday morning email. A Cloud Run Job is triggered by Cloud Scheduler which queries a PLPCO ArcGIS Server Feature Service to get the last weeks worth of updates. This data is then used as input data to a SendGrid email template and sent out to the PLPCO RDCC mailing list.
 
