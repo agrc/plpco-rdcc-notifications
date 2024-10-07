@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: 🏗 Run build script
-        run: npm run build:vite
+        run: npm run build
 
   unit-test:
     name: 🧪 Unit tests
