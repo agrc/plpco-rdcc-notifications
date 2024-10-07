@@ -1,6 +1,6 @@
 {
   "name": "@ugrc/plpco-rdcc-notifications",
-  "version": "1.0.0",
+  "version": "1.0.0-0",
   "description": "Weekly email notifications for RDCC projects",
   "main": "index.js",
   "type": "module",
