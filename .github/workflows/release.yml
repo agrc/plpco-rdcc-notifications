@@ -58,6 +58,8 @@ jobs:
       - name: 📦 Build image
         shell: bash
         run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+        env:
+          GOOGLE_NODE_RUN_SCRIPTS: ''
 
       - name: 🏺 Push images to artifact registry
         shell: bash
@@ -157,6 +159,8 @@ jobs:
       - name: 📦 Build image
         shell: bash
         run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+        env:
+          GOOGLE_NODE_RUN_SCRIPTS: ''
 
       - name: 🏺 Push images to artifact registry
         shell: bash
