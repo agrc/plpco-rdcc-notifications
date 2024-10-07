@@ -1,0 +1,208 @@
+name: Release Events
+
+on:
+  release:
+    types: [published]
+
+permissions:
+  id-token: write
+  deployments: write
+
+jobs:
+  deploy-gcp-dev:
+    name: Deploy dev GCP infrastructure
+    runs-on: ubuntu-latest
+    environment:
+      name: dev
+    if: github.ref == 'refs/heads/dev'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: 'access_token'
+          create_credentials_file: true
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'beta'
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v3
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            latest
+
+      - name: 🔰 Setup pack
+        uses: buildpacks/github-actions/setup-pack@v5.7.4
+
+      - name: 📦 Build image
+        shell: bash
+        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+
+      - name: 🏺 Push images to artifact registry
+        shell: bash
+        run: docker push ${{ steps.meta.outputs.tags }}
+
+      - name: 🚀 Deploy Cloud Run Job
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          job: notify
+          project_id: ${{ secrets.PROJECT_ID }}
+          region: us-central1
+          image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
+          secrets: /secrets/email/key=sendgrid-api:latest
+          secrets_update_strategy: overwrite
+          env_vars: |-
+            SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }}
+            EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+          timeout: 30m
+          flags: |
+            --memory=512Mi
+            --task-timeout=10m
+            --max-retries=3
+            --tasks 1
+            --parallelism 1
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: 🕰️ Create Cloud Scheduler
+        run: |
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
+            gcloud scheduler jobs create http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          else
+            gcloud scheduler jobs update http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          fi
+
+  deploy-gcp-prod:
+    name: Deploy prod GCP infrastructure
+    runs-on: ubuntu-latest
+    environment:
+      name: prod
+    if: github.ref == 'refs/heads/main'
+
+    steps:
+      - name: ⬇️ Set up code
+        uses: actions/checkout@v4
+        with:
+          show-progress: false
+
+      - name: 🗝️ Authenticate to Google Cloud
+        id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          access_token_scopes: 'email, openid, https://www.googleapis.com/auth/cloud-platform, https://www.googleapis.com/auth/firebase'
+          workload_identity_provider: ${{ secrets.IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
+          token_format: 'access_token'
+          create_credentials_file: true
+
+      - name: ☁️ Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          install_components: 'beta'
+
+      - name: 🗝️ Authenticate Docker to Google Cloud
+        uses: docker/login-action@v3
+        with:
+          registry: us-central1-docker.pkg.dev
+          username: oauth2accesstoken
+          password: ${{ steps.auth.outputs.access_token }}
+
+      - name: 🏷️ Extract tags from GitHub
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job
+          tags: |
+            latest
+
+      - name: 🔰 Setup pack
+        uses: buildpacks/github-actions/setup-pack@v5.7.4
+
+      - name: 📦 Build image
+        shell: bash
+        run: pack build job --builder gcr.io/buildpacks/builder -t ${{ steps.meta.outputs.tags }}
+
+      - name: 🏺 Push images to artifact registry
+        shell: bash
+        run: docker push ${{ steps.meta.outputs.tags }}
+
+      - name: 🚀 Deploy Cloud Run Job
+        uses: google-github-actions/deploy-cloudrun@v2
+        with:
+          job: notify
+          project_id: ${{ secrets.PROJECT_ID }}
+          region: us-central1
+          image: us-central1-docker.pkg.dev/${{ secrets.PROJECT_ID }}/images/job:latest
+          secrets: /secrets/email/key=sendgrid-api:latest
+          secrets_update_strategy: overwrite
+          env_vars: |-
+            SENDGRID_TEMPLATE=${{ secrets.SENDGRID_TEMPLATE }}
+            EMAIL_RECIPIENT=${{ secrets.EMAIL_RECIPIENT }}
+          timeout: 30m
+          flags: |
+            --memory=512Mi
+            --task-timeout=10m
+            --max-retries=3
+            --tasks 1
+            --parallelism 1
+            --service-account=cloud-run-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com
+
+      - name: 🕰️ Create Cloud Scheduler
+        run: |
+          if [ ! "$(gcloud scheduler jobs list --location=us-central1 | grep rdcc-weekly-email)" ]; then
+            gcloud scheduler jobs create http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          else
+            gcloud scheduler jobs update http rdcc-weekly-email \
+              --description="Trigger the rdcc-weekly-email bot once a week on monday morning" \
+              --schedule="0 5 * * MON" \
+              --time-zone=America/Denver \
+              --uri="https://us-central1-run.googleapis.com/apis/run.googleapis.com/v1/namespaces/${{ secrets.PROJECT_ID }}/jobs/notify:run" \
+              --oauth-service-account-email=cloud-scheduler-sa@${{ secrets.PROJECT_ID }}.iam.gserviceaccount.com \
+              --location=us-central1 \
+              --max-retry-attempts=0 \
+              --quiet
+          fi
