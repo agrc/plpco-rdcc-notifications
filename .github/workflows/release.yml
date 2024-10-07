@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: dev
-    if: github.ref == 'refs/heads/dev'
+    if: github.event.release.prerelease == true
 
     steps:
       - name: ⬇️ Set up code
@@ -113,7 +113,7 @@ jobs:
     runs-on: ubuntu-latest
     environment:
       name: prod
-    if: github.ref == 'refs/heads/main'
+    if: github.event.release.prerelease == false
 
     steps:
       - name: ⬇️ Set up code
