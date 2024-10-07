@@ -32,7 +32,7 @@ jobs:
         run: npm ci
 
       - name: 🏗 Run build script
-        run: npm run build
+        run: npm run build:vite
 
   unit-test:
     name: 🧪 Unit tests
@@ -71,4 +71,4 @@ jobs:
           identity-provider: ${{ secrets.IDENTITY_PROVIDER }}
           service-account-email: ${{ secrets.SERVICE_ACCOUNT_EMAIL }}
           project-id: ${{ secrets.PROJECT_ID }}
-          build-command: npm run build -- --mode dev
+          build-command: npm run build:vite -- --mode dev
