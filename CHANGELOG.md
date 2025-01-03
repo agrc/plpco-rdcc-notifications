@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.2](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.1...v1.0.2) (2025-01-03)
+
+
+### Dependencies
+
+* bump the safe-dependencies group across 1 directory with 5 updates ([d64f9a0](https://github.com/agrc/plpco-rdcc-notifications/commit/d64f9a0dead790d6e464cf40a2626eac5e39a071))
+
 ## 0.0.1 (2024-10-07)
 
 
