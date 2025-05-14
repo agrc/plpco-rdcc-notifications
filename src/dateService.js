@@ -1,4 +1,4 @@
-import { differenceInCalendarDays, formatISO9075, subWeeks, startOfWeek, endOfWeek, startOfDay } from 'date-fns';
+import { differenceInCalendarDays, endOfWeek, formatISO9075, startOfDay, startOfWeek, subWeeks } from 'date-fns';
 
 export const getBeginningOfLastWeek = (date) => formatISO9075(startOfWeek(subWeeks(date, 1)));
 export const getEndOfLastWeek = (date) => formatISO9075(endOfWeek(subWeeks(date, 1)));

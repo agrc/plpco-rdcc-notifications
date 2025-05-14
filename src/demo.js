@@ -1,9 +1,9 @@
-import './style.css';
-import { template } from './template';
-import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService';
 import { format } from 'date-fns';
 import ky from 'ky';
 import { featureService } from './data';
+import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService';
+import './style.css';
+import { template } from './template';
 
 const client = ky.create({
   timeout: 25000,

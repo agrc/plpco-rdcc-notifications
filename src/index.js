@@ -1,6 +1,6 @@
-import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService.js';
-import { format } from 'date-fns';
 import mailClient from '@sendgrid/mail';
+import { format } from 'date-fns';
+import { getNewProjects, getProjectsWithComments, getUpcomingProjects } from './queryService.js';
 
 if (!['production', 'test'].includes(process.env.NODE_ENV)) {
   await import('dotenv/config');
