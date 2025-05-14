@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.0.3](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.2...v1.0.3) (2025-05-14)
+
+
+### Dependencies
+
+* fy25q4 package updates ([3be980b](https://github.com/agrc/plpco-rdcc-notifications/commit/3be980ba6ffdfeebeea6e9355e3f8587cfe9d061))
+
 ## [1.0.2](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.1...v1.0.2) (2025-01-03)
 
 
