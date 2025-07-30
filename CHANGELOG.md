@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.4-0](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.3...v1.0.4-0) (2025-07-30)
+
+
+### Dependencies
+
+* audit fix ([37c484c](https://github.com/agrc/plpco-rdcc-notifications/commit/37c484c1a79d8fb0f6cc801853656c470358de14))
+* bump form-data from 4.0.2 to 4.0.4 in the npm_and_yarn group ([7d2b209](https://github.com/agrc/plpco-rdcc-notifications/commit/7d2b2097ecd363584a2ecdf65e874a133b73b8ae))
+* bump the safe-dependencies group across 1 directory with 6 updates ([c2c46ce](https://github.com/agrc/plpco-rdcc-notifications/commit/c2c46ce119ca33db523ad56e7bd5cc9d84318024))
+
 ## [1.0.3](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.2...v1.0.3) (2025-05-14)
 
 
