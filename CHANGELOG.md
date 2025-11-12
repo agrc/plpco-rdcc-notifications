@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.0.5](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.4...v1.0.5) (2025-11-12)
+
+
+### Dependencies
+
+* bump axios from 1.9.0 to 1.13.2 ([8996432](https://github.com/agrc/plpco-rdcc-notifications/commit/8996432f62dfdb0ae26496717200edc1af5e0b2d))
+* bump the safe-dependencies group across 1 directory with 7 updates ([ec865d6](https://github.com/agrc/plpco-rdcc-notifications/commit/ec865d62bb820161a867d94cea94d7be6a48d022))
+* **dev:** bump the major-dependencies group with 3 updates ([253c8c0](https://github.com/agrc/plpco-rdcc-notifications/commit/253c8c017eaa88061f75e7f32ac070843a6900aa))
+
 ## [1.0.4](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.3...v1.0.4) (2025-07-30)
 
 
