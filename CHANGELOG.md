@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.0.6](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.5...v1.0.6) (2026-02-13)
+
+
+### Dependencies
+
+* bump the safe-dependencies group with 5 updates ([5157688](https://github.com/agrc/plpco-rdcc-notifications/commit/51576886dd025979a3ac913c947b500f63e1b012))
+* fy26 q3 dependency update ([10d4a0d](https://github.com/agrc/plpco-rdcc-notifications/commit/10d4a0d0af7cc6f50e22ba19985af338fa02da58))
+
+
+### Documentation
+
+* add attribution ([53a8ce1](https://github.com/agrc/plpco-rdcc-notifications/commit/53a8ce137438acf438632b2d33e2cb90fc5b8ec1))
+
 ## [1.0.5](https://github.com/agrc/plpco-rdcc-notifications/compare/v1.0.4...v1.0.5) (2025-11-12)
 
 
