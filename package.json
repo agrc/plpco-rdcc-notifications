@@ -39,7 +39,7 @@
     "@ugrc/eslint-config": "^1.2.3",
     "dotenv": "^17.2.3",
     "eslint": "^9.39.2",
-    "handlebars": "^4.7.8",
+    "handlebars": "^4.7.9",
     "jest": "^30.2.0",
     "prettier": "^3.8.1",
     "prettier-plugin-organize-imports": "^4.3.0",
